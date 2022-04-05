@@ -3,12 +3,10 @@ an automated storage/retrieval warehouse simulator, that controls a crane, has m
 <br>
 # install
 <br>
-
 ```sh
 pip install pygame
 ```
 <br>
-
 # run
 
 ```sh
