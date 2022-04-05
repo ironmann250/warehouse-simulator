@@ -6,5 +6,11 @@ an automated storage/retrieval warehouse simulator, that controls a crane, has m
 
 ```sh
 pip install pygame
+```
+<br>
+
+# run
+
+```sh
 python interface.py
 ```
