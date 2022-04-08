@@ -105,7 +105,7 @@ class Screen:
         if not self.init: #only run at init
             return
         cols,rows=self.grid_size
-        self.grid=[[[0,0]]*cols for i in range(rows)] #init grid with 0s
+        self.grid=[[[0,0]]*(rows+1) for i in range(cols+1)] #init grid with 0s
         #assume all are on  on line - will later change lines to crates_width
         total_inputs=config.INPUT*config.INPUT_CONTAINERS #assume all inlines are inputs
         total_outputs=config.OUTPUTS*config.OUTPUT_CONTAINERS
@@ -193,11 +193,11 @@ class Screen:
             self.crane[0]+=1
 
         #check signs and border
-        if self.crane[0] <0:
+        if self.crane[0]<0:
             self.crane[0]=0
         elif self.crane[0]>self.grid_size[0]:
             self.crane[0]=self.grid_size[0]
-        if self.crane[1] <0:
+        if self.crane[1]<0:
             self.crane[1]=0
         elif self.crane[1]>self.grid_size[1]:
             self.crane[1]=self.grid_size[1]
@@ -245,16 +245,16 @@ class Screen:
 
             if keys[K_UP]:
                 self.move_crane('up')
-                time.sleep(0.05)
+                time.sleep(0.1)
             if keys[K_DOWN]:
                 self.move_crane('down')
-                time.sleep(0.05)
+                time.sleep(0.1)
             if keys[K_LEFT]:
                 self.move_crane('left')
-                time.sleep(0.05)
+                time.sleep(0.1)
             if keys[K_RIGHT]:
                 self.move_crane('right')
-                time.sleep(0.05)
+                time.sleep(0.1)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
