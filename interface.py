@@ -80,7 +80,7 @@ class Screen:
                 y+=1
         #depending on grid size value might be [x-1,y-2] or [x,y-1]
         #it can as well be calcualted form screen, block and line sizes
-        self.grid_size=[x,y]
+        self.grid_size=[x-1,y-1]
         #print (x-1,y-1)
     
     def get_cell_coordinate(self,col,row,centered=True):
@@ -118,20 +118,39 @@ class Screen:
         for i in range(config.INPUT):
             for j in range (config.INPUT_CONTAINERS):
 
-                self.inputs.append(Container(config.INPUT_COLOR,
+                self.inputs.append(Container(config.INPUTS_COLOR,
                 self.get_cell_coordinate(gridx,gridy)))
 
                 self.grid[gridx][gridy]=[2,len(self.inputs)-1] #put type and list location
                 gridx+=1
             gridx+=1 # skip a cell
-        self.init=False
+
+        # init inputs
+        gridy=rows-1
+        gridx=output_start_at
+
+        for i in range(config.OUTPUTS):
+            for j in range (config.OUTPUT_CONTAINERS):
+
+                self.outputs.append(Container(config.OUTPUTS_COLOR,
+                self.get_cell_coordinate(gridx,gridy)))
+
+                self.grid[gridx][gridy]=[3,len(self.outputs)-1] #put type and list location
+                gridx+=1
+            gridx+=1 # skip a cell
+
+        self.init=False #stop init (only run at startup)
 
     def draw_components(self):
         for rows in self.grid:
-            for cols in rows:
-                if cols[0]==2:
-                    input_obj=self.inputs[cols[1]]
-                    self.screen.blit(input_obj.surf,input_obj.rect)
+            for col in rows:
+                if col[0]==2:
+                    obj=self.inputs[col[1]]
+                    self.screen.blit(obj.surf,obj.rect)
+                elif col[0]==3:
+                    obj=self.outputs[col[1]]
+                    self.screen.blit(obj.surf,obj.rect)
+
                 
 
                 
