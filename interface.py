@@ -1,10 +1,12 @@
 from tkinter import TRUE
-import pygame,config,random,math,pprint
+import pygame,config,time
 
 from pygame.locals import (
 
     K_LEFT,
     K_RIGHT,
+    K_UP,
+    K_DOWN,
     K_ESCAPE,
     KEYDOWN,
     QUIT,
@@ -44,7 +46,7 @@ class Screen:
         self.outputs=[]
         self.crates=[]
         self.grid=[]
-        self.crane=Container((config.CRANE_COLOR),self.get_cell_coordinate(0,0)) #maybe change
+        self.crane=[0,0]
         self.init=True
 
     def draw_rect(self,color,x,y,width,height):
@@ -93,8 +95,8 @@ class Screen:
         if not centered:
             return [x,y]
         else:
-            x=x+(config.BLOCK_SIZE[0]/2)
-            y=y+(config.BLOCK_SIZE[1]/2)
+            x=x+(config.BLOCK_SIZE[0]//2)
+            y=y+(config.BLOCK_SIZE[1]//2)
             return [x,y]
 
 
@@ -115,7 +117,7 @@ class Screen:
         crates_y_start_at=(rows-config.CRATES_LENGTH)//2
         
         #init crane
-        self.grid[0][0]=[4,0]
+        self.grid[self.crane[0]][self.crane[1]]=[4,Container((config.CRANE_COLOR),self.get_cell_coordinate(self.crane[0],self.crane[1]))]
 
         # init inputs
         gridy=1
@@ -127,7 +129,9 @@ class Screen:
                 self.inputs.append(Container(config.INPUTS_COLOR,
                 self.get_cell_coordinate(gridx,gridy)))
 
-                self.grid[gridx][gridy]=[2,len(self.inputs)-1] #put type and list location
+                self.grid[gridx][gridy]=[2,Container(config.INPUTS_COLOR,
+                self.get_cell_coordinate(gridx,gridy))] #put type and list location
+
                 gridx+=1
             gridx+=1 # skip a cell
 
@@ -141,7 +145,8 @@ class Screen:
                 self.outputs.append(Container(config.OUTPUTS_COLOR,
                 self.get_cell_coordinate(gridx,gridy)))
 
-                self.grid[gridx][gridy]=[3,len(self.outputs)-1] #put type and list location
+                self.grid[gridx][gridy]=[3,Container(config.OUTPUTS_COLOR,
+                self.get_cell_coordinate(gridx,gridy))] #put type and list location
                 gridx+=1
             gridx+=1 # skip a cell
         
@@ -157,7 +162,8 @@ class Screen:
                         self.crates.append(Container(config.CRATES_COLOR,
                         self.get_cell_coordinate(gridx,gridy)))
 
-                        self.grid[gridx][gridy]=[1,len(self.crates)-1]
+                        self.grid[gridx][gridy]=[1,Container(config.CRATES_COLOR,
+                        self.get_cell_coordinate(gridx,gridy))]
                     #print(config.CRATES[group][length][width] )
                     gridx+=1
                 gridx=crates_x_start_at
@@ -165,26 +171,42 @@ class Screen:
             crates_x_start_at+=(config.CRATES_WIDTH+1)
             gridx=crates_x_start_at
             gridy=crates_y_start_at
-            
-            
-        
-
+        print(len(self.grid),len(self.grid[0]))
         self.init=False #stop init (only run at startup)
 
     def draw_components(self):
         for rows in self.grid:
             for col in rows:
-                if col[0]==2:
-                    obj=self.inputs[col[1]]
-                    self.screen.blit(obj.surf,obj.rect)
-                elif col[0]==3:
-                    obj=self.outputs[col[1]]
-                    self.screen.blit(obj.surf,obj.rect)
-                elif col[0]==1:
-                    obj=self.crates[col[1]]
-                    self.screen.blit(obj.surf,obj.rect)
-                elif col[0]==4:
-                    self.screen.blit(self.crane.surf,self.crane.rect)
+                if col[0]!=0:
+                    self.screen.blit(col[1].surf,col[1].rect)
+    
+    def move_crane(self, direction):
+        curr_location=self.crane.copy()
+        #do move
+        if direction=='up':
+            self.crane[1]-=1
+        elif direction=='down':
+            self.crane[1]+=1
+        elif direction=='left':
+            self.crane[0]-=1
+        elif direction=='right':
+            self.crane[0]+=1
+
+        #check signs and border
+        if self.crane[0] <0:
+            self.crane[0]=0
+        elif self.crane[0]>self.grid_size[0]:
+            self.crane[0]=self.grid_size[0]
+        if self.crane[1] <0:
+            self.crane[1]=0
+        elif self.crane[1]>self.grid_size[1]:
+            self.crane[1]=self.grid_size[1]
+        #move and destroy last one
+        self.grid[curr_location[0]][curr_location[1]]=[0,0]
+        self.grid[self.crane[0]][self.crane[1]]=[4,Container((config.CRANE_COLOR),
+        self.get_cell_coordinate(self.crane[0],self.crane[1]))]
+        
+
 
                 
 
@@ -195,15 +217,13 @@ class Screen:
         self.draw_grid()
         self.init_components()
         self.draw_components()
-        #testcrate=Container((0,0,0),self.get_cell_coordinate(40,30)) #x-1,y-2,x,y-1
-        #self.screen.blit(testcrate.surf,testcrate.rect)
         pygame.display.update()
     
     def run(self):
         while self.running:
             
             self.draw_frame()
-            #self.clock.tick(120)
+            self.clock.tick(120)
 
             #get left to rewind
             #get right to advance
@@ -220,6 +240,21 @@ class Screen:
             #update outputs
 
             #update instruction counter
+
+            keys=pygame.key.get_pressed()
+
+            if keys[K_UP]:
+                self.move_crane('up')
+                time.sleep(0.05)
+            if keys[K_DOWN]:
+                self.move_crane('down')
+                time.sleep(0.05)
+            if keys[K_LEFT]:
+                self.move_crane('left')
+                time.sleep(0.05)
+            if keys[K_RIGHT]:
+                self.move_crane('right')
+                time.sleep(0.05)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
