@@ -33,16 +33,20 @@ TYPES=[0,1,2,3] #0 nothing, 1 crate, 2 input, 3 output
 INSTRUCTIONS=[] #[FROM_TYPE,FROM_ID,TO_TYPE,TO_ID] ID is what grid to what grid
 
 def randomly_populate_crates():
-    global CRATES_LENGTH, CRATES_WIDTH, CRATES_GROUPS
     for group in range(CRATES_GROUPS):
         for length in range(CRATES_LENGTH):
             for width in range(CRATES_WIDTH):
-                #choose randomly with bias of 80% for a crate to not be empty
-                CRATES[group][length][width]=random.choices([1,0], weights=(80,20),k=1) 
+                #choose randomly with bias of n% for a crate to not be empty
+                CRATES[group][length][width]=random.choices([1,0], weights=(50,30),k=1)[0] 
 
 
 randomly_populate_crates()
 
 #pprint.pprint(CRATES)
+
+print(CRATES[0])
+print(CRATES[1])
+print(CRATES[2])
+print(CRATES[3])
 
 

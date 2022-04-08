@@ -107,14 +107,16 @@ class Screen:
         #assume all are on  on line - will later change lines to crates_width
         total_inputs=config.INPUT*config.INPUT_CONTAINERS #assume all inlines are inputs
         total_outputs=config.OUTPUTS*config.OUTPUT_CONTAINERS
-        input_start_at=math.floor((cols-(total_inputs+(config.INPUT-1)))/2)
-        output_start_at=math.floor((cols-(total_outputs+(config.OUTPUTS-1)))/2)
+        input_start_at=(cols-(total_inputs+(config.INPUT-1)))//2
+        output_start_at=(cols-(total_outputs+(config.OUTPUTS-1)))//2
         gridx,gridy=[0,0]
-
+        total_crates_length=(config.CRATES_GROUPS*config.CRATES_WIDTH)+(config.CRATES_GROUPS-1)
+        crates_x_start_at=(cols-total_crates_length)//2
+        crates_y_start_at=(rows-config.CRATES_LENGTH)//2
         # init inputs
         gridy=1
         gridx=input_start_at
-
+        
         for i in range(config.INPUT):
             for j in range (config.INPUT_CONTAINERS):
 
@@ -138,6 +140,30 @@ class Screen:
                 self.grid[gridx][gridy]=[3,len(self.outputs)-1] #put type and list location
                 gridx+=1
             gridx+=1 # skip a cell
+        
+        #init crates 
+        gridy=crates_y_start_at
+        gridx=crates_x_start_at
+
+        for group in range(config.CRATES_GROUPS):
+            for length in range(config.CRATES_LENGTH):
+                for width in range(config.CRATES_WIDTH):
+                    if config.CRATES[group][length][width] == 1:
+                        
+                        self.crates.append(Container(config.CRATES_COLOR,
+                        self.get_cell_coordinate(gridx,gridy)))
+
+                        self.grid[gridx][gridy]=[1,len(self.crates)-1]
+                    #print(config.CRATES[group][length][width] )
+                    gridx+=1
+                gridx=crates_x_start_at
+                gridy+=1
+            crates_x_start_at+=(config.CRATES_WIDTH+1)
+            gridx=crates_x_start_at
+            gridy=crates_y_start_at
+            
+            
+        
 
         self.init=False #stop init (only run at startup)
 
@@ -149,6 +175,9 @@ class Screen:
                     self.screen.blit(obj.surf,obj.rect)
                 elif col[0]==3:
                     obj=self.outputs[col[1]]
+                    self.screen.blit(obj.surf,obj.rect)
+                elif col[0]==1:
+                    obj=self.crates[col[1]]
                     self.screen.blit(obj.surf,obj.rect)
 
                 
