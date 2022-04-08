@@ -44,7 +44,7 @@ class Screen:
         self.outputs=[]
         self.crates=[]
         self.grid=[]
-        self.crane=Container((config.CRANE_COLOR),(0,0)) #maybe change
+        self.crane=Container((config.CRANE_COLOR),self.get_cell_coordinate(0,0)) #maybe change
         self.init=True
 
     def draw_rect(self,color,x,y,width,height):
@@ -113,6 +113,10 @@ class Screen:
         total_crates_length=(config.CRATES_GROUPS*config.CRATES_WIDTH)+(config.CRATES_GROUPS-1)
         crates_x_start_at=(cols-total_crates_length)//2
         crates_y_start_at=(rows-config.CRATES_LENGTH)//2
+        
+        #init crane
+        self.grid[0][0]=[4,0]
+
         # init inputs
         gridy=1
         gridx=input_start_at
@@ -179,6 +183,8 @@ class Screen:
                 elif col[0]==1:
                     obj=self.crates[col[1]]
                     self.screen.blit(obj.surf,obj.rect)
+                elif col[0]==4:
+                    self.screen.blit(self.crane.surf,self.crane.rect)
 
                 
 
