@@ -24,23 +24,25 @@ OUTPUTS_COLOR=(255,0,0)
 
 CRATES_WIDTH=2
 CRATES_LENGTH=5
-CRATES=[]
+CRATES_GROUPS=4
+CRATES=[[[0]*CRATES_WIDTH]*CRATES_LENGTH
+ for i in range(CRATES_GROUPS)] #init crates GROUP[LENGTH[WIDTH]]
 CRATES_COLOR=(0,0,255)
 
 TYPES=[0,1,2,3] #0 nothing, 1 crate, 2 input, 3 output
 INSTRUCTIONS=[] #[FROM_TYPE,FROM_ID,TO_TYPE,TO_ID] ID is what grid to what grid
 
-def populate_crates():
-    global CRATES_LENGTH, CRATES_WIDTH, CRANE_REACH
-    CRATES=[]
-    for i in range(CRATES_LENGTH):
-        tmp=[]
-        for j in range(CRATES_WIDTH):
-            for k in range(CRANE_REACH):
-                tmp.append(random.choices([0,1])) #choices 0 always mean nothing others mean crate is full
-        CRATES.append(tmp)
-    return CRATES
+def randomly_populate_crates():
+    global CRATES_LENGTH, CRATES_WIDTH, CRATES_GROUPS
+    for group in range(CRATES_GROUPS):
+        for length in range(CRATES_LENGTH):
+            for width in range(CRATES_WIDTH):
+                #choose randomly with bias of 80% for a crate to not be empty
+                CRATES[group][length][width]=random.choices([1,0], weights=(80,20),k=1) 
 
-#pprint.pprint(populate_crates())
+
+randomly_populate_crates()
+
+#pprint.pprint(CRATES)
 
 
