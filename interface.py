@@ -1,5 +1,5 @@
 from tkinter import TRUE
-import pygame,config,time
+import pygame,config,time,asyncio
 
 #global vars
 from pygame.locals import (
@@ -15,9 +15,11 @@ from pygame.locals import (
 
 pygame.init()
 pygame.display.set_caption("warehouse simulator")
+time.sleep(0.05)
 ADDTOINPUT = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDTOINPUT, config.INPUT_SPEED)
-REMOVEFROMOUTPUT = pygame.USEREVENT + 1
+pygame.time.set_timer(ADDTOINPUT,config.INPUT_SPEED)
+time.sleep(0.05)
+REMOVEFROMOUTPUT = pygame.USEREVENT + 2
 pygame.time.set_timer(REMOVEFROMOUTPUT, config.OUTPUT_SPEED)
 
 
@@ -290,11 +292,22 @@ class Screen:
         self.draw_components()
         pygame.display.update()
     
+    def handle_events(self,event_list):
+        for event in event_list:
+            if event.type == pygame.QUIT:
+                self.running = False
+            if event.type == REMOVEFROMOUTPUT:
+                self.remove_from_output()
+            if event.type == ADDTOINPUT:
+                self.add_to_input()
+    
     def run(self):
         while self.running:
+
+            event_list=pygame.event.get()
             
             self.draw_frame()
-            self.clock.tick(120)
+            #self.clock.tick()
 
             keys=pygame.key.get_pressed()
 
@@ -311,13 +324,8 @@ class Screen:
                 self.move_crane('right')
                 time.sleep(0.1)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                elif event.type == REMOVEFROMOUTPUT:
-                    self.remove_from_output()
-                elif event.type == ADDTOINPUT:
-                    self.add_to_input()
+            self.handle_events(event_list)
+
         pygame.quit()
 
 
