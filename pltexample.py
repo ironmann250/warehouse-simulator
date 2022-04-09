@@ -1,3 +1,4 @@
+from re import T
 import matplotlib.pyplot as plt 
 import numpy as np
 
@@ -30,8 +31,71 @@ while num<math.pi*4:
     x_values.append(num)
     num+=0.1
 
-pylab.plot(x_values,y_values,'ro')
-pylab.show()
+# pylab.plot(x_values,y_values,'ro')
+# pylab.show()
+
+
+import pandas as pandas
+
+table=list("ABCDefg")
+percent=[25,30,19,5,10,11,10]
+explode=[0,0.01,0,0,0,0,0]
+# plt.axes(aspect=1)
+# plt.pie(percent,labels=table,autopct="%.2f%%",explode=explode,shadow=True)
+# plt.show()
+
+class American():
+    def __init__(self):
+        self.nationality="american"
+    
+    @staticmethod
+    def print_nationality():
+        print("american")
+
+class NewYorker(American):
+    pass
+
+am1=American()
+#NewYorker.print_nationality()
+
+class Shape():
+    def __init__(self,length):
+         self.length=0
+    def area(self):
+        return 0
+
+class square(Shape):
+    def __init__(self,length):
+        super(Shape, self).__init__()
+        self.length=length
+    def area(self):
+        return self.length**2
+
+a=square(4)
+print(a.area())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

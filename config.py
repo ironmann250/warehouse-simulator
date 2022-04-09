@@ -29,6 +29,8 @@ CRATES=[[[0]*CRATES_WIDTH]*CRATES_LENGTH
  for i in range(CRATES_GROUPS)] #init crates GROUP[LENGTH[WIDTH]]
 CRATES_COLOR=(0,0,255)
 
+EMPTY_COLOR=(211,211,211)
+
 TYPES=[0,1,2,3] #0 nothing, 1 crate, 2 input, 3 output, 4 is robot
 INSTRUCTIONS=[] #[FROM_TYPE,FROM_ID,TO_TYPE,TO_ID] ID is what grid to what grid
 

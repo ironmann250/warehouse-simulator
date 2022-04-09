@@ -46,7 +46,8 @@ class Screen:
         self.outputs=[]
         self.crates=[]
         self.grid=[]
-        self.crane=[0,0]
+        self.containers=[]
+        self.crane=[0,0,0] #grid x,y and content 0 nothing, 1 something
         self.init=True
 
     def draw_rect(self,color,x,y,width,height):
@@ -164,6 +165,8 @@ class Screen:
 
                         self.grid[gridx][gridy]=[1,Container(config.CRATES_COLOR,
                         self.get_cell_coordinate(gridx,gridy))]
+                    else:
+                        self.grid[gridx][gridy]=[1,0]
                     #print(config.CRATES[group][length][width] )
                     gridx+=1
                 gridx=crates_x_start_at
@@ -175,10 +178,43 @@ class Screen:
         self.init=False #stop init (only run at startup)
 
     def draw_components(self):
+        
+        r=0
         for rows in self.grid:
+            c=0
             for col in rows:
                 if col[0]!=0:
-                    self.screen.blit(col[1].surf,col[1].rect)
+                    if col[1]!=0: #col[1] is NOT empty in case of empty crates,inputs and outputs
+                        self.screen.blit(col[1].surf,self.get_cell_coordinate(r,c,False))
+                    else: #the crate is empty
+                        empty_crate=Container(config.EMPTY_COLOR,
+                        self.get_cell_coordinate(r,c))
+                        self.screen.blit(empty_crate.surf,self.get_cell_coordinate(r,c,False))
+                c+=1
+            r+=1
+                
+
+
+    def collision_detected(self,next):
+        next_cell=self.grid[next[0]][next[1]]
+        if next_cell[0] in [1,2,3]:
+            return True
+        else:
+            return False
+
+    def asrs_crane_action(self,current,next,action): 
+        #action from asrs algorithm #TODO
+        pass
+
+    def auto_crane_action(self,current,next): 
+        """
+        if it's a crate and crane is empty add in crate in crane else do nothing
+        if it's input and crane is empty and the input (empty ) crate else do nothing
+        if it's output and it has a crate and crane is empty add it otherwise do nothing
+        after adding things to the crane make input or output empty
+        """
+        next_cell=self.grid[next[0]][next[1]]
+
     
     def move_crane(self, direction):
         curr_location=self.crane.copy()
@@ -201,10 +237,15 @@ class Screen:
             self.crane[1]=0
         elif self.crane[1]>self.grid_size[1]:
             self.crane[1]=self.grid_size[1]
-        #move and destroy last one
-        self.grid[curr_location[0]][curr_location[1]]=[0,0]
-        self.grid[self.crane[0]][self.crane[1]]=[4,Container((config.CRANE_COLOR),
-        self.get_cell_coordinate(self.crane[0],self.crane[1]))]
+        #check move validity and function
+        if not self.collision_detected(self.crane):
+            #move and destroy last one
+            self.grid[curr_location[0]][curr_location[1]]=[0,0]
+            self.grid[self.crane[0]][self.crane[1]]=[4,Container((config.CRANE_COLOR),
+            self.get_cell_coordinate(self.crane[0],self.crane[1]))]
+        else:
+            self.crane=curr_location
+            return
         
 
 
