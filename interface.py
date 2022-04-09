@@ -1,6 +1,7 @@
 from tkinter import TRUE
 import pygame,config,time
 
+#global vars
 from pygame.locals import (
 
     K_LEFT,
@@ -12,17 +13,14 @@ from pygame.locals import (
     QUIT,
 )
 
+pygame.init()
+pygame.display.set_caption("warehouse simulator")
+ADDTOINPUT = pygame.USEREVENT + 1
+pygame.time.set_timer(ADDTOINPUT, config.INPUT_SPEED)
+REMOVEFROMOUTPUT = pygame.USEREVENT + 1
+pygame.time.set_timer(REMOVEFROMOUTPUT, config.OUTPUT_SPEED)
 
 
-#make crates
-#make output crates
-#make input crates
-#make crane (crane make line to move on)
-#make all group
-#make crates group
-#make input group
-#make output group
-#make collission 
 class Container(pygame.sprite.Sprite):
     """
     create crate object
@@ -36,9 +34,9 @@ class Container(pygame.sprite.Sprite):
 
 class Screen:
     def __init__(self):
-        pygame.init()
+        #init pygame attributes
         self.screen=pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-        pygame.display.set_caption("warehouse simulator")
+        #init screen class attributes
         self.running=True
         self.instruction_counter=0
         self.clock=pygame.time.Clock()
@@ -203,13 +201,14 @@ class Screen:
         #action from asrs algorithm #TODO
         pass
 
-    def auto_crane_action(self,current,next): 
+    def auto_crane_action(self,next): 
         """
         if it's a crate and crane is empty add in crate in crane else do nothing
         if it's input and crane is empty and the input (empty ) crate else do nothing
         if it's output and it has a crate and crane is empty add it otherwise do nothing
         after adding things to the crane make input or output empty
         output will be emptied automatically following a time based event
+        input will be replenished following a time based event as well
         """
         next_cell=self.grid[next[0]][next[1]]
         if self.crane[2]==0: #crane is empty
@@ -262,11 +261,27 @@ class Screen:
             self.grid[curr_location[0]][curr_location[1]]=[0,0]
             self.grid[self.crane[0]][self.crane[1]]=[4,1]
         else:
-            self.auto_crane_action(curr_location,self.crane)
+            self.auto_crane_action(self.crane)
             #move it back but keep empty state [2]
             self.crane[0]=curr_location[0]
             self.crane[1]=curr_location[1]
             return
+    
+    def remove_from_output(self):
+        #look for outputs on grid and empty the first full one
+        for row in self.grid:
+            for col in row:
+                if col[0]==3 and col[1]==1:
+                    col[1]=0
+                    return
+    
+    def add_to_input(self):
+        #look for inputs on grid and fill the first empty one
+        for row in self.grid:
+            for col in row:
+                if col[0]==2 and col[1]==0:
+                    col[1]=1
+                    return
              
     def draw_frame(self):
         self.screen.fill((255,255,255))
@@ -280,22 +295,6 @@ class Screen:
             
             self.draw_frame()
             self.clock.tick(120)
-
-            #get left to rewind
-            #get right to advance
-
-            #create grid
-
-            #render all entities
-
-            #read and exec instruction
-            #check collission
-            #update robot
-            #update crates
-            #update inputs
-            #update outputs
-
-            #update instruction counter
 
             keys=pygame.key.get_pressed()
 
@@ -315,11 +314,14 @@ class Screen:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                elif event.type == REMOVEFROMOUTPUT:
+                    self.remove_from_output()
+                elif event.type == ADDTOINPUT:
+                    self.add_to_input()
         pygame.quit()
 
 
 if __name__ == "__main__":
-    
+
     sim=Screen()
-    
     sim.run()
