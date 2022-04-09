@@ -38,6 +38,7 @@ class Screen:
     def __init__(self):
         pygame.init()
         self.screen=pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+        pygame.display.set_caption("warehouse simulator")
         self.running=True
         self.instruction_counter=0
         self.clock=pygame.time.Clock()
@@ -118,7 +119,7 @@ class Screen:
         crates_y_start_at=(rows-config.CRATES_LENGTH)//2
         
         #init crane
-        self.grid[self.crane[0]][self.crane[1]]=[4,Container((config.CRANE_COLOR),self.get_cell_coordinate(self.crane[0],self.crane[1]))]
+        self.grid[self.crane[0]][self.crane[1]]=[4,1]
 
         # init inputs
         gridy=1
@@ -127,12 +128,7 @@ class Screen:
         for i in range(config.INPUT):
             for j in range (config.INPUT_CONTAINERS):
 
-                self.inputs.append(Container(config.INPUTS_COLOR,
-                self.get_cell_coordinate(gridx,gridy)))
-
-                self.grid[gridx][gridy]=[2,Container(config.INPUTS_COLOR,
-                self.get_cell_coordinate(gridx,gridy))] #put type and list location
-
+                self.grid[gridx][gridy]=[2,1] #put type and list location
                 gridx+=1
             gridx+=1 # skip a cell
 
@@ -143,11 +139,7 @@ class Screen:
         for i in range(config.OUTPUTS):
             for j in range (config.OUTPUT_CONTAINERS):
 
-                self.outputs.append(Container(config.OUTPUTS_COLOR,
-                self.get_cell_coordinate(gridx,gridy)))
-
-                self.grid[gridx][gridy]=[3,Container(config.OUTPUTS_COLOR,
-                self.get_cell_coordinate(gridx,gridy))] #put type and list location
+                self.grid[gridx][gridy]=[3,1] #put type and list location
                 gridx+=1
             gridx+=1 # skip a cell
         
@@ -160,11 +152,7 @@ class Screen:
                 for width in range(config.CRATES_WIDTH):
                     if config.CRATES[group][length][width] == 1:
                         
-                        self.crates.append(Container(config.CRATES_COLOR,
-                        self.get_cell_coordinate(gridx,gridy)))
-
-                        self.grid[gridx][gridy]=[1,Container(config.CRATES_COLOR,
-                        self.get_cell_coordinate(gridx,gridy))]
+                        self.grid[gridx][gridy]=[1,1]
                     else:
                         self.grid[gridx][gridy]=[1,0]
                     #print(config.CRATES[group][length][width] )
@@ -178,17 +166,26 @@ class Screen:
         self.init=False #stop init (only run at startup)
 
     def draw_components(self):
-        
         r=0
         for rows in self.grid:
             c=0
             for col in rows:
                 if col[0]!=0:
                     if col[1]!=0: #col[1] is NOT empty in case of empty crates,inputs and outputs
-                        self.screen.blit(col[1].surf,self.get_cell_coordinate(r,c,False))
+                        obj=None
+                        if col[0]==1:
+                            obj=Container(config.CRATES_COLOR,self.get_cell_coordinate(r,c))
+                        elif col[0]==2:
+                            obj=Container(config.INPUTS_COLOR,self.get_cell_coordinate(r,c))
+                        elif col[0]==3:
+                            obj=Container(config.OUTPUTS_COLOR,self.get_cell_coordinate(r,c))
+                        elif col[0]==4:
+                            obj=Container(config.CRANE_COLOR,self.get_cell_coordinate(r,c))
+
+                        self.screen.blit(obj.surf,self.get_cell_coordinate(r,c,False))
+
                     else: #the crate is empty
-                        empty_crate=Container(config.EMPTY_COLOR,
-                        self.get_cell_coordinate(r,c))
+                        empty_crate=Container(config.EMPTY_COLOR,self.get_cell_coordinate(r,c))
                         self.screen.blit(empty_crate.surf,self.get_cell_coordinate(r,c,False))
                 c+=1
             r+=1
@@ -212,8 +209,25 @@ class Screen:
         if it's input and crane is empty and the input (empty ) crate else do nothing
         if it's output and it has a crate and crane is empty add it otherwise do nothing
         after adding things to the crane make input or output empty
+        output will be emptied automatically following a time based event
         """
         next_cell=self.grid[next[0]][next[1]]
+        if self.crane[2]==0: #crane is empty
+            if next_cell[0]==1 and next_cell[1]!=0: 
+                #if it's a crate and not empty
+                #add to crate and make holder empty
+                self.crane[2]=1
+                self.grid[next[0]][next[1]]=[1,0]
+            if next_cell[0]==2 and next_cell[1]!=0:
+                #if it's input and not empty
+                #add to crane and make input empty
+                self.crane[2]=1
+                self.grid[next[0]][next[1]]=[2,0]
+        else:
+            if next_cell[0]==1 and next_cell[1]==0: 
+                #if it's a crate and empty
+                #remove from crane and make crate full
+                pass
 
     
     def move_crane(self, direction):
@@ -246,13 +260,7 @@ class Screen:
         else:
             self.crane=curr_location
             return
-        
-
-
-                
-
-                
-
+             
     def draw_frame(self):
         self.screen.fill((255,255,255))
         self.draw_grid()
@@ -304,7 +312,7 @@ class Screen:
 
 
 if __name__ == "__main__":
-    pygame.display.set_caption("warehouse simulator")
+    
     sim=Screen()
     
     sim.run()
