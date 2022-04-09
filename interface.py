@@ -1,6 +1,7 @@
-from tkinter import TRUE
-import pygame,config,time,asyncio
-
+import pygame,config,time,asyncio,collections,pprint
+from maze import Maze, MazeLocation, manhattan_distance,euclidean_distance
+from generic_search import dfs, bfs, node_to_path, astar, Node
+from typing import List, NamedTuple, Callable, Optional
 #global vars
 from pygame.locals import (
 
@@ -50,6 +51,7 @@ class Screen:
         self.containers=[]
         self.crane=[0,0,0] #grid x,y and content 0 nothing, 1 something
         self.init=True
+        self.testrun=True
 
     def draw_rect(self,color,x,y,width,height):
         pygame.draw.rect(self.screen,color,
@@ -162,7 +164,7 @@ class Screen:
             crates_x_start_at+=(config.CRATES_WIDTH+1)
             gridx=crates_x_start_at
             gridy=crates_y_start_at
-        print(len(self.grid),len(self.grid[0]))
+        #pprint.pprint(self.grid)
         self.init=False #stop init (only run at startup)
 
     def draw_components(self):
@@ -290,6 +292,9 @@ class Screen:
         self.draw_grid()
         self.init_components()
         self.draw_components()
+        empty_crate=Container((125,200,155),self.get_cell_coordinate(17,25))
+        self.screen.blit(empty_crate.surf,self.get_cell_coordinate(17,25,False))
+        self.run_once()
         pygame.display.update()
     
     def handle_events(self,event_list):
@@ -300,6 +305,33 @@ class Screen:
                 self.remove_from_output()
             if event.type == ADDTOINPUT:
                 self.add_to_input()
+    
+
+    
+    def path_exec(self,path):
+        for cell in path:
+            self.grid[cell[0]][cell[1]]=[4,1]
+    
+    def run_once(self):
+        if not self.testrun:
+            return
+        start=[0,0]
+        end=[17,25]
+        start = MazeLocation(0,0)
+        end = MazeLocation(17,25)
+        mz=Maze(grid=self.grid,rows=len(self.grid),columns=len(self.grid[0]),start=start,goal=end)
+        distance: Callable[[MazeLocation], float] = manhattan_distance(mz.goal)
+        solution1: Optional[Node[MazeLocation]] = astar(mz.start, mz.goal_test, mz.successors,distance)
+        if solution1 is None:
+            print("No solution found using depth-first search!")
+        else:
+            path1: List[MazeLocation] = node_to_path(solution1)
+            for path in path1:
+                #print(path.column,path.row)
+                empty_crate=Container((125,200,155),self.get_cell_coordinate(path.row,path.column))
+                self.screen.blit(empty_crate.surf,self.get_cell_coordinate(path.row,path.column,False))
+        print (len(path1))
+        #self.testrun=False
     
     def run(self):
         while self.running:
