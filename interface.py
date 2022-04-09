@@ -227,7 +227,12 @@ class Screen:
             if next_cell[0]==1 and next_cell[1]==0: 
                 #if it's a crate and empty
                 #remove from crane and make crate full
-                pass
+                self.crane[2]=0
+                self.grid[next[0]][next[1]]=[1,1]
+            if next_cell[0]==3 and next_cell[1]==0:
+                #if it's output empty
+                self.crane[2]=0
+                self.grid[next[0]][next[1]]=[3,1]
 
     
     def move_crane(self, direction):
@@ -255,10 +260,12 @@ class Screen:
         if not self.collision_detected(self.crane):
             #move and destroy last one
             self.grid[curr_location[0]][curr_location[1]]=[0,0]
-            self.grid[self.crane[0]][self.crane[1]]=[4,Container((config.CRANE_COLOR),
-            self.get_cell_coordinate(self.crane[0],self.crane[1]))]
+            self.grid[self.crane[0]][self.crane[1]]=[4,1]
         else:
-            self.crane=curr_location
+            self.auto_crane_action(curr_location,self.crane)
+            #move it back but keep empty state [2]
+            self.crane[0]=curr_location[0]
+            self.crane[1]=curr_location[1]
             return
              
     def draw_frame(self):
