@@ -32,7 +32,10 @@ CRATES_COLOR=(0,0,255)
 EMPTY_COLOR=(211,211,211)
 
 TYPES=[0,1,2,3] #0 nothing, 1 crate, 2 input, 3 output, 4 is robot
-INSTRUCTIONS=[] #[FROM_TYPE,FROM_ID,TO_TYPE,TO_ID] ID is what grid to what grid
+INSTRUCTIONS=[[[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[0,10],'down']]
+
+MIN_MAX_ORDERS=[1,5]
 
 def randomly_populate_crates():
     for group in range(CRATES_GROUPS):
