@@ -34,6 +34,39 @@ EMPTY_COLOR=(211,211,211)
 TYPES=[0,1,2,3] #0 nothing, 1 crate, 2 input, 3 output, 4 is robot
 INSTRUCTIONS=[[[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
              [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
+             [[16,25],[0,0],'up'],
+             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+             [[17,25],[16,25],'up'],
              [[16,25],[0,0],'up']
              ]
 
