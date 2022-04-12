@@ -3,6 +3,7 @@ import pygame,config,time,asyncio,collections,pprint
 from maze import Maze, MazeLocation, manhattan_distance,euclidean_distance
 from generic_search import dfs, bfs, node_to_path, astar, Node
 from typing import List, NamedTuple, Callable, Optional
+from simpleWarehouseManager import organize_crates
 #global vars
 from pygame.locals import (
 
@@ -151,15 +152,17 @@ class Screen:
         #init crates 
         gridy=crates_y_start_at
         gridx=crates_x_start_at
-
+        self.crates=[[[0]*config.CRATES_WIDTH]*config.CRATES_LENGTH for i in range(config.CRATES_GROUPS)]
         for group in range(config.CRATES_GROUPS):
             for length in range(config.CRATES_LENGTH):
                 for width in range(config.CRATES_WIDTH):
                     if config.CRATES[group][length][width] == 1:
                         
                         self.grid[gridx][gridy]=[1,1]
+                        self.crates[group][length][width]=[gridx,gridy,1]
                     else:
                         self.grid[gridx][gridy]=[1,0]
+                        self.crates[group][length][width]=[gridx,gridy,0]
                  
                     gridx+=1
                 gridx=crates_x_start_at
@@ -167,10 +170,11 @@ class Screen:
             crates_x_start_at+=(config.CRATES_WIDTH+1)
             gridx=crates_x_start_at
             gridy=crates_y_start_at
-        #pprint.pprint(self.grid)
+        #print(self.crates)
+
         self.init=False #stop init (only run at startup)
 
-    def draw_components(self):
+    def draw_components(self): 
         r=0
         for rows in self.grid:
             c=0
@@ -354,6 +358,8 @@ class Screen:
 
     def execute_instruction(self):
         if self.instruction_counter>=len(config.INSTRUCTIONS):
+            self.grid=organize_crates(self.grid.copy(),self.crates.copy())
+            
             return None
         start,end,action=config.INSTRUCTIONS[self.instruction_counter]
         if len(self.path)>0: #let path finish
@@ -381,7 +387,7 @@ class Screen:
         self.draw_components()
         action=self.execute_instruction()
         if action:
-            self.path_exec(action)
+            self.path_exec(action,0)
         pygame.display.update()
     
     def run(self):

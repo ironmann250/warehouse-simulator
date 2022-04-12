@@ -32,7 +32,8 @@ CRATES_COLOR=(0,0,255)
 EMPTY_COLOR=(211,211,211)
 
 TYPES=[0,1,2,3] #0 nothing, 1 crate, 2 input, 3 output, 4 is robot
-INSTRUCTIONS=[[[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
+INSTRUCTIONS=[]
+'''[[[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
              [[17,25],[16,25],'up'],
              [[16,25],[0,0],'up'],
              [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
@@ -68,7 +69,7 @@ INSTRUCTIONS=[[[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what gri
              [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
              [[17,25],[16,25],'up'],
              [[16,25],[0,0],'up']
-             ]
+             ]'''
 
 MIN_MAX_ORDERS=[1,5]
 
@@ -77,7 +78,7 @@ def randomly_populate_crates():
         for length in range(CRATES_LENGTH):
             for width in range(CRATES_WIDTH):
                 #choose randomly with bias of n% for a crate to not be empty
-                CRATES[group][length][width]=random.choices([1,0], weights=(70,30),k=1)[0] 
+                CRATES[group][length][width]=random.choices([1,0], weights=(100,0),k=1)[0] 
 
 
 randomly_populate_crates()
