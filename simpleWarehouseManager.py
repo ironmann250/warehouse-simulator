@@ -36,21 +36,22 @@ def get_updated_crates(grid,crates):
         for l,length in enumerate(group):
             for w,width in enumerate(length):
                 row,column,status=crates[g][l][w]
+                tot_crate+=status
+                #print(crates[g][l][w], grid[row][column])
+                crates[g][l][w][2]=grid[row][column][1]
                 if grid[row][column][1] == 1:
                     total_crates+=1
                     tot_grid+=1
-                tot_crate+=status
-                print(crates[g][l][w], grid[row][column])
-                crates[g][l][w][2]=grid[row][column][1]
     print (tot_grid,tot_crate)
-    return total_crates,crates
+    #return total_crates,crates
 
 def update_grid(grid,crates):
     for g,group in enumerate(crates):
         for l,length in enumerate(group):
             for w,width in enumerate(length):
                 row,column,status=crates[g][l][w]
-                grid[row][column]=[1,status]
+                grid[row][column][1]=status
+                #print (status)
                 #print(grid[row][column],crates[g][l][w])
     return grid #is it needed since we will work on self.grid?
 
@@ -58,8 +59,9 @@ def make_all_crates_empty(crates):
     for g,group in enumerate(crates):
         for l,length in enumerate(group):
             for w,width in enumerate(length):
-                crates[g][l][w][2]=0
-                #print (crates[g][l][w])
+                #crates[g][l][w][2]=0
+                width[2]=0
+                #print (width)
     return crates
             
 
@@ -68,14 +70,14 @@ def organize_crates(grid,crates):
     #reoraganize crates
     #put all crates near outputs
     #crates are given through the updated crates
-    total_crates,crates=get_updated_crates(grid.copy(),crates.copy())
+    #total_crates,crates=get_updated_crates(grid.copy(),crates.copy())
     empty_crates=make_all_crates_empty(crates.copy())
     groups=config.CRATES_GROUPS
     tot_length=config.CRATES_LENGTH
     tot_width=config.CRATES_WIDTH
     #print("###########################################")
     #print (update_grid(grid.copy(),empty_crates.copy()))
-    return update_grid(grid.copy(),crates.copy())
+    return update_grid(grid.copy(),empty_crates.copy()).copy()
     #populate low first
     #meaning loop is Length, width then Group, length=length-1
     for length in range(tot_length-1,-1,-1):

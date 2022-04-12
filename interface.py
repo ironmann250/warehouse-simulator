@@ -3,7 +3,7 @@ import pygame,config,time,asyncio,collections,pprint
 from maze import Maze, MazeLocation, manhattan_distance,euclidean_distance
 from generic_search import dfs, bfs, node_to_path, astar, Node
 from typing import List, NamedTuple, Callable, Optional
-from simpleWarehouseManager import organize_crates
+from simpleWarehouseManager import organize_crates,get_updated_crates,update_grid,make_all_crates_empty
 #global vars
 from pygame.locals import (
 
@@ -134,18 +134,22 @@ class Screen:
         for i in range(config.INPUT):
             for j in range (config.INPUT_CONTAINERS):
 
-                self.grid[gridx][gridy]=[2,1] #put type and list location
+                self.grid[gridx][gridy]=[2,0] #put type and list location
                 gridx+=1
             gridx+=1 # skip a cell
 
-        # init inputs
+        # init outputs
         gridy=rows-1
         gridx=output_start_at
 
         for i in range(config.OUTPUTS):
             for j in range (config.OUTPUT_CONTAINERS):
-
-                self.grid[gridx][gridy]=[3,1] #put type and list location
+                if i==0 and j==0:
+                    self.grid[gridx][gridy]=[3,1] #put type and list location
+                elif i==0 and j==1:
+                    self.grid[gridx][gridy]=[3,1] #put type and list location
+                else:
+                    self.grid[gridx][gridy]=[3,0]
                 gridx+=1
             gridx+=1 # skip a cell
         
@@ -170,7 +174,7 @@ class Screen:
             crates_x_start_at+=(config.CRATES_WIDTH+1)
             gridx=crates_x_start_at
             gridy=crates_y_start_at
-        #print(self.crates)
+        #print(self.grid)
 
         self.init=False #stop init (only run at startup)
 
@@ -180,7 +184,7 @@ class Screen:
             c=0
             for col in rows:
                 if col[0]!=0:
-                    if col[1]!=0: #col[1] is NOT empty in case of empty crates,inputs and outputs
+                    if col[1]==1: #col[1] is NOT empty in case of empty crates,inputs and outputs
                         obj=None
                         if col[0]==1:
                             obj=Container(config.CRATES_COLOR,self.get_cell_coordinate(r,c))
@@ -280,11 +284,28 @@ class Screen:
     
     def remove_from_output(self):
         #look for outputs on grid and empty the first full one
-        for row in self.grid:
-            for col in row:
-                if col[0]==3 and col[1]==1:
-                    col[1]=0
-                    return
+        outputs=[]
+        for r,row in enumerate(self.grid):
+            for c,col in enumerate(row):
+                if col[0]==3:
+                    outputs.append([r,c,col[1]])
+                #and col[1]==1:
+                #     col[1]=1
+                #     break
+                
+        for i,crate in enumerate(outputs):
+            if i==0:
+                r1,c1,state1=crate
+                self.grid[r1][c1][1]=0
+                continue
+            r1,c1,state1=crate
+            r2,c2,state2=outputs[i-1]
+
+            #self.grid[r1][c1][1]=state2
+            self.grid[r1][c1][1]=state2
+        
+            
+
     
     def add_to_input(self):
         #look for inputs on grid and fill the first empty one
@@ -358,8 +379,9 @@ class Screen:
 
     def execute_instruction(self):
         if self.instruction_counter>=len(config.INSTRUCTIONS):
-            self.grid=organize_crates(self.grid.copy(),self.crates.copy())
-            
+            #self.grid=organize_crates(self.grid.copy(),self.crates.copy()).copy()
+            #empt=make_all_crates_empty(self.crates.copy())
+            #get_updated_crates(update_grid(self.grid,empt),self.crates)
             return None
         start,end,action=config.INSTRUCTIONS[self.instruction_counter]
         if len(self.path)>0: #let path finish
