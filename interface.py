@@ -3,7 +3,7 @@ import pygame,config,time,asyncio,collections,pprint
 from maze import Maze, MazeLocation, manhattan_distance,euclidean_distance
 from generic_search import dfs, bfs, node_to_path, astar, Node
 from typing import List, NamedTuple, Callable, Optional
-from simpleWarehouseManager import organize_crates,get_updated_crates,update_grid,make_all_crates_empty
+from simpleWarehouseManager import organize_crates,get_updated_crates,update_grid,make_all_crates_empty,make_instruction
 #global vars
 from pygame.locals import (
 
@@ -144,12 +144,7 @@ class Screen:
 
         for i in range(config.OUTPUTS):
             for j in range (config.OUTPUT_CONTAINERS):
-                if i==0 and j==0:
-                    self.grid[gridx][gridy]=[3,1] #put type and list location
-                elif i==0 and j==1:
-                    self.grid[gridx][gridy]=[3,1] #put type and list location
-                else:
-                    self.grid[gridx][gridy]=[3,0]
+                self.grid[gridx][gridy]=[3,0]
                 gridx+=1
             gridx+=1 # skip a cell
         
@@ -376,12 +371,17 @@ class Screen:
                 if self.grid[location[0]+x][location[1]+y][0] in [1,2,3]:
                     return True
         return False
+    
+    def get_crane_location(self):
+        for r,rows in enumerate(self.grid):
+            for c,col in enumerate(rows):
+                if col[0]==4:
+                    return r,c
 
     def execute_instruction(self):
         if self.instruction_counter>=len(config.INSTRUCTIONS):
-            #self.grid=organize_crates(self.grid.copy(),self.crates.copy()).copy()
-            #empt=make_all_crates_empty(self.crates.copy())
-            #get_updated_crates(update_grid(self.grid,empt),self.crates)
+            config.INSTRUCTIONS=make_instruction(self.grid,self.get_crane_location())
+            self.instruction_counter=0
             return None
         start,end,action=config.INSTRUCTIONS[self.instruction_counter]
         if len(self.path)>0: #let path finish
@@ -409,7 +409,7 @@ class Screen:
         self.draw_components()
         action=self.execute_instruction()
         if action:
-            self.path_exec(action,0)
+            self.path_exec(action,0.05)
         pygame.display.update()
     
     def run(self):

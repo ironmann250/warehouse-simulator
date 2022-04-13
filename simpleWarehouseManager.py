@@ -5,7 +5,7 @@
 # the crane executess each order one by one
 # the crane will pause if outputs are full then continue after
 
-import config,random
+import config,random,pprint
 
 order_count=0
 
@@ -28,6 +28,7 @@ def add_crate():
 #take bottom crates and put in outputs
 #wait or add inputs if outputs is full
 #decrement order_count
+
 def get_updated_crates(grid,crates):
     total_crates=0
     tot_grid=0
@@ -121,3 +122,51 @@ def get_outputs(grid,reverse=True):
         full_crates.reverse()
         empty_crates.reverse()
     return full_crates,empty_crates
+
+
+def make_instruction(grid,start):
+    #get full crates 
+    crate=None
+    #get output
+    output=None
+    instructions=[]
+    for r,rows in enumerate(grid):
+        for c,col in enumerate(rows):
+            if col[0]==1 and col[1]==1 and not crate:
+                crate=[r,c]
+            elif col[0]==3 and col[1]==0 and not output:
+                output=[r,c]
+            else:
+                continue
+    #make instruction
+    #check if the crate is on the left or right
+    left=False
+    right=False
+    if grid[crate[0]][crate[1]-1][0]==3:
+        right=True
+    else:
+        left=True
+    
+    if left:
+        #from start to crate
+        end1=[crate[0]-1,crate[1]]
+        action1='right'
+        instructions.append([start,end1,action1])
+        #from crate to output
+        end2=[output[0],output[1]-1]
+        action2='down'
+        instructions.append([end1,end2,action2])
+    else:
+        #from start to crate
+        end1=[crate[0]+1,crate[1]]
+        action1='left'
+        instructions.append([start,end1,action1])
+        #from crate to output
+        end2=[output[0],output[1]-1]
+        action2='down'
+        instructions.append([end1,end2,action2])
+    return instructions
+
+
+
+        
