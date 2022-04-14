@@ -43,7 +43,7 @@ class Maze:
     def fill_grid(self,grid,rows: int, columns: int):
         for row in range(rows):
             for column in range(columns):
-                if grid[row][column][0] in [1,2,3]:
+                if grid[row][column][0] in [1,2,3,4]:
                     self._grid[row][column]=Cell.BLOCKED
 
 

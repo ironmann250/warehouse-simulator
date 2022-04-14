@@ -139,32 +139,19 @@ def make_instruction(grid,start):
             else:
                 continue
     #make instruction
-    #check if the crate is on the left or right
-    left=False
-    right=False
-    if grid[crate[0]][crate[1]-1][0]==3:
-        right=True
-    else:
-        left=True
     
-    if left:
-        #from start to crate
-        end1=[crate[0]-1,crate[1]]
-        action1='right'
-        instructions.append([start,end1,action1])
-        #from crate to output
-        end2=[output[0],output[1]-1]
-        action2='down'
-        instructions.append([end1,end2,action2])
-    else:
-        #from start to crate
+    #from start to crate
+    end1=[crate[0]-1,crate[1]]
+    action1='right'
+    if grid[end1[0]][end1[1]][0]==1:
         end1=[crate[0]+1,crate[1]]
         action1='left'
-        instructions.append([start,end1,action1])
-        #from crate to output
-        end2=[output[0],output[1]-1]
-        action2='down'
-        instructions.append([end1,end2,action2])
+    instructions.append([start,end1,action1])
+    #from crate to output
+    end2=[output[0],output[1]-1]
+    action2='down'
+    instructions.append([end1,end2,action2])
+
     return instructions
 
 

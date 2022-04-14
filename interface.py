@@ -178,19 +178,27 @@ class Screen:
         for rows in self.grid:
             c=0
             for col in rows:
-                if col[0]!=0:
+                if col[0]==5:
+                    obj=Container((254,216,177),self.get_cell_coordinate(r,c))
+                    self.screen.blit(obj.surf,self.get_cell_coordinate(r,c,False))
+                    
+                elif col[0] in [1,2,3,4]:
                     if col[1]==1: #col[1] is NOT empty in case of empty crates,inputs and outputs
                         obj=None
                         if col[0]==1:
                             obj=Container(config.CRATES_COLOR,self.get_cell_coordinate(r,c))
+                            #self.screen.blit(obj.surf,self.get_cell_coordinate(r,c,False))
                         elif col[0]==2:
                             obj=Container(config.INPUTS_COLOR,self.get_cell_coordinate(r,c))
+                            #self.screen.blit(obj.surf,self.get_cell_coordinate(r,c,False))
                         elif col[0]==3:
                             obj=Container(config.OUTPUTS_COLOR,self.get_cell_coordinate(r,c))
-                        elif col[0]==4:
+                            #self.screen.blit(obj.surf,self.get_cell_coordinate(r,c,False))
+                        elif col[0]==4 and col[1]!=0:
                             obj=Container(config.CRANE_COLOR,self.get_cell_coordinate(r,c))
-
+                        
                         self.screen.blit(obj.surf,self.get_cell_coordinate(r,c,False))
+                        
 
                     else: #the crate is empty
                         empty_crate=Container(config.EMPTY_COLOR,self.get_cell_coordinate(r,c))
@@ -268,7 +276,7 @@ class Screen:
         #check move validity and function
         if not self.collision_detected(self.crane):
             #move and destroy last one
-            self.grid[curr_location[0]][curr_location[1]]=[0,0]
+            self.grid[curr_location[0]][curr_location[1]][1]=0
             self.grid[self.crane[0]][self.crane[1]]=[4,1]
         else:
             self.auto_crane_action(self.crane)
@@ -329,7 +337,7 @@ class Screen:
         mz=Maze(grid=self.grid,rows=len(self.grid),
         columns=len(self.grid[0]),start=start,goal=end)
 
-        distance: Callable[[MazeLocation], float] = manhattan_distance(mz.goal)
+        distance: Callable[[MazeLocation], float] = euclidean_distance(mz.goal)
 
         solution: Optional[Node[MazeLocation]] = astar(mz.start, 
         mz.goal_test, mz.successors,distance)
@@ -349,7 +357,7 @@ class Screen:
         i=self.path_counter
         cell=self.path[i]
         if not i==0:
-            self.grid[self.path[i-1].row][self.path[i-1].column]=[0,0]
+            self.grid[self.path[i-1].row][self.path[i-1].column]=[5,0]
         self.grid[cell.row][cell.column]=[4,1]
         time.sleep(sleep_for)
         if self.path_counter >= len(self.path)-1:
@@ -409,7 +417,7 @@ class Screen:
         self.draw_components()
         action=self.execute_instruction()
         if action:
-            self.path_exec(action,0.05)
+            self.path_exec(action,0.001)
         pygame.display.update()
     
     def run(self):

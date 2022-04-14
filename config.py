@@ -13,13 +13,13 @@ CRANE_COLOR=(255,116,64) ##ff7440, redorange
 
 INPUT=2
 INPUT_CONTAINERS=8
-INPUT_SPEED=500 #milliseconds
+INPUT_SPEED=1 #milliseconds
 INPUTS_COLOR=(0,255,0)
 
 
 OUTPUTS=2
 OUTPUT_CONTAINERS=8
-OUTPUT_SPEED=1500 #milliseconds
+OUTPUT_SPEED=1 #milliseconds
 OUTPUTS_COLOR=(255,0,0)
 
 CRATES_WIDTH=2
@@ -29,7 +29,7 @@ CRATES=[[[0]*CRATES_WIDTH]*CRATES_LENGTH
  for i in range(CRATES_GROUPS)] #init crates GROUP[LENGTH[WIDTH]]
 CRATES_COLOR=(0,0,255)
 
-EMPTY_COLOR=(211,211,211)
+EMPTY_COLOR=(190,190,190)
 
 TYPES=[0,1,2,3] #0 nothing, 1 crate, 2 input, 3 output, 4 is robot
 INSTRUCTIONS=[]
@@ -78,7 +78,7 @@ def randomly_populate_crates():
         for length in range(CRATES_LENGTH):
             for width in range(CRATES_WIDTH):
                 #choose randomly with bias of n% for a crate to not be empty
-                CRATES[group][length][width]=random.choices([1,0], weights=(70,30),k=1)[0] 
+                CRATES[group][length][width]=random.choices([1,0], weights=(80,20),k=1)[0] 
 
 
 randomly_populate_crates()
