@@ -124,7 +124,7 @@ def get_outputs(grid,reverse=True):
     return full_crates,empty_crates
 
 
-def make_instruction(grid,start):
+def make_crates_instruction(grid,start):
     #get full crates 
     crate=None
     #get output
@@ -139,7 +139,8 @@ def make_instruction(grid,start):
             else:
                 continue
     #make instruction
-    
+    if not crate or not output:
+        return []
     #from start to crate
     end1=[crate[0]-1,crate[1]]
     action1='right'
@@ -154,6 +155,52 @@ def make_instruction(grid,start):
 
     return instructions
 
+def make_input_instruction(grid,start):
+    #get full crates 
+    crate=None
+    #get output
+    input=None
+    instructions=[]
+    for r,rows in enumerate(grid):
+        for c,col in enumerate(rows):
+            if col[0]==1 and col[1]==0 and not crate:
+                crate=[r,c]
+            elif col[0]==2 and col[1]==1 and not input:
+                input=[r,c]
+            else:
+                continue
+    #make instruction
+    #get crate from input 
+    if not crate or not input:
+        return []
+    end1=[input[0],input[1]+1]
+    action1='up'
+    instructions.append([start,end1,action1])
+    #put crate in empty crate
+    end2=[crate[0]-1,crate[1]]
+    action2='right'
+    if grid[end2[0]][end2[1]][0]==1:
+        end2=[crate[0]+1,crate[1]]
+        action2='left'
+    instructions.append([end1,end2,action2])
+    return instructions
 
 
+def simple_strategy(grid,start,ratio=3/4):
+    #choose to store or retrieve if 
+    # inputs reach or are under a ratio
+    full_input,total_input=[0,0]
+    for r,rows in enumerate(grid):
+        for c,col in enumerate(rows):
+            if col[0]==2:
+                total_input+=1
+                if col[1]==1:
+                    full_input+=1
+    if full_input/total_input>ratio:
+        return make_input_instruction(grid,start)
+    else:
+        return make_crates_instruction(grid,start)
+    
+    
+                    
         

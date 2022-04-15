@@ -13,7 +13,7 @@ CRANE_COLOR=(255,116,64) ##ff7440, redorange
 
 INPUT=2
 INPUT_CONTAINERS=8
-INPUT_SPEED=1 #milliseconds
+INPUT_SPEED=1500 #milliseconds
 INPUTS_COLOR=(0,255,0)
 
 
@@ -78,7 +78,7 @@ def randomly_populate_crates():
         for length in range(CRATES_LENGTH):
             for width in range(CRATES_WIDTH):
                 #choose randomly with bias of n% for a crate to not be empty
-                CRATES[group][length][width]=random.choices([1,0], weights=(80,20),k=1)[0] 
+                CRATES[group][length][width]=random.choices([1,0], weights=(90,10),k=1)[0] 
 
 
 randomly_populate_crates()

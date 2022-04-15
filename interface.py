@@ -3,7 +3,7 @@ import pygame,config,time,asyncio,collections,pprint
 from maze import Maze, MazeLocation, manhattan_distance,euclidean_distance
 from generic_search import dfs, bfs, node_to_path, astar, Node
 from typing import List, NamedTuple, Callable, Optional
-from simpleWarehouseManager import organize_crates,get_updated_crates,update_grid,make_all_crates_empty,make_instruction
+from warehouseManager import *
 #global vars
 from pygame.locals import (
 
@@ -125,7 +125,7 @@ class Screen:
         crates_y_start_at=(rows-config.CRATES_LENGTH)//2
         
         #init crane
-        self.grid[self.crane[0]][self.crane[1]]=[4,1]
+        self.grid[self.crane[0]][self.crane[1]]=[4,0]
 
         # init inputs
         gridy=1
@@ -134,7 +134,7 @@ class Screen:
         for i in range(config.INPUT):
             for j in range (config.INPUT_CONTAINERS):
 
-                self.grid[gridx][gridy]=[2,0] #put type and list location
+                self.grid[gridx][gridy]=[2,1] #put type and list location
                 gridx+=1
             gridx+=1 # skip a cell
 
@@ -182,7 +182,7 @@ class Screen:
                     obj=Container((254,216,177),self.get_cell_coordinate(r,c))
                     self.screen.blit(obj.surf,self.get_cell_coordinate(r,c,False))
                     
-                elif col[0] in [1,2,3,4]:
+                elif col[0] in [1,2,3]:
                     if col[1]==1: #col[1] is NOT empty in case of empty crates,inputs and outputs
                         obj=None
                         if col[0]==1:
@@ -203,6 +203,9 @@ class Screen:
                     else: #the crate is empty
                         empty_crate=Container(config.EMPTY_COLOR,self.get_cell_coordinate(r,c))
                         self.screen.blit(empty_crate.surf,self.get_cell_coordinate(r,c,False))
+                
+                robot=Container(config.CRANE_COLOR,self.get_cell_coordinate(self.crane[0],self.crane[1]))
+                self.screen.blit(robot.surf,self.get_cell_coordinate(self.crane[0],self.crane[1],False))
                 c+=1
             r+=1
                 
@@ -277,7 +280,8 @@ class Screen:
         if not self.collision_detected(self.crane):
             #move and destroy last one
             self.grid[curr_location[0]][curr_location[1]][1]=0
-            self.grid[self.crane[0]][self.crane[1]]=[4,1]
+            #self.grid[self.crane[0]][self.crane[1]]=[4,1]
+            #self.crane[2]=1
         else:
             self.auto_crane_action(self.crane)
             #move it back but keep empty state [2]
@@ -337,7 +341,7 @@ class Screen:
         mz=Maze(grid=self.grid,rows=len(self.grid),
         columns=len(self.grid[0]),start=start,goal=end)
 
-        distance: Callable[[MazeLocation], float] = euclidean_distance(mz.goal)
+        distance: Callable[[MazeLocation], float] = manhattan_distance(mz.goal)
 
         solution: Optional[Node[MazeLocation]] = astar(mz.start, 
         mz.goal_test, mz.successors,distance)
@@ -358,7 +362,9 @@ class Screen:
         cell=self.path[i]
         if not i==0:
             self.grid[self.path[i-1].row][self.path[i-1].column]=[5,0]
-        self.grid[cell.row][cell.column]=[4,1]
+        #self.grid[cell.row][cell.column]=[4,1]
+        self.crane[0]=cell.row
+        self.crane[1]=cell.column
         time.sleep(sleep_for)
         if self.path_counter >= len(self.path)-1:
             self.crane[0]=cell.row
@@ -381,6 +387,7 @@ class Screen:
         return False
     
     def get_crane_location(self):
+        return self.crane[:2]
         for r,rows in enumerate(self.grid):
             for c,col in enumerate(rows):
                 if col[0]==4:
@@ -388,7 +395,7 @@ class Screen:
 
     def execute_instruction(self):
         if self.instruction_counter>=len(config.INSTRUCTIONS):
-            config.INSTRUCTIONS=make_instruction(self.grid,self.get_crane_location())
+            config.INSTRUCTIONS=make_input_instruction(self.grid,self.get_crane_location())
             self.instruction_counter=0
             return None
         start,end,action=config.INSTRUCTIONS[self.instruction_counter]
@@ -396,7 +403,7 @@ class Screen:
             return action
         #check if start has a crane
         #check if end is near a crate and calc action (up,down...)
-        if self.grid[start[0]][start[1]][0]==4:
+        if start==self.crane[:2]:#self.grid[start[0]][start[1]][0]==4:
             if True:#self.location_near_crate(end):
                 self.path=self.plan_path(start,end)
                 return action
@@ -417,7 +424,7 @@ class Screen:
         self.draw_components()
         action=self.execute_instruction()
         if action:
-            self.path_exec(action,0.001)
+            self.path_exec(action,0.0001)
         pygame.display.update()
     
     def run(self):
