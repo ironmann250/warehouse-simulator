@@ -395,7 +395,7 @@ class Screen:
 
     def execute_instruction(self):
         if self.instruction_counter>=len(config.INSTRUCTIONS):
-            config.INSTRUCTIONS=make_input_instruction(self.grid,self.get_crane_location())
+            config.INSTRUCTIONS=simple_strategy(self.grid,self.get_crane_location())
             self.instruction_counter=0
             return None
         start,end,action=config.INSTRUCTIONS[self.instruction_counter]

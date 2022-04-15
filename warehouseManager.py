@@ -128,16 +128,18 @@ def make_crates_instruction(grid,start):
     #get full crates 
     crate=None
     #get output
-    output=None
+    output=[]
     instructions=[]
     for r,rows in enumerate(grid):
         for c,col in enumerate(rows):
             if col[0]==1 and col[1]==1 and not crate:
                 crate=[r,c]
-            elif col[0]==3 and col[1]==0 and not output:
-                output=[r,c]
+            elif col[0]==3:
+                output.append([r,c])
             else:
                 continue
+
+    output=output[0]
     #make instruction
     if not crate or not output:
         return []
@@ -186,17 +188,35 @@ def make_input_instruction(grid,start):
     return instructions
 
 
-def simple_strategy(grid,start,ratio=3/4):
+def simple_strategy(grid,start):
     #choose to store or retrieve if 
     # inputs reach or are under a ratio
-    full_input,total_input=[0,0]
+    full_inputs,total_inputs=[0,0]
+    full_crates,total_crates=[0,0]
+    full_outputs,total_outputs=[0,0]
     for r,rows in enumerate(grid):
         for c,col in enumerate(rows):
             if col[0]==2:
-                total_input+=1
+                total_inputs+=1
                 if col[1]==1:
-                    full_input+=1
-    if full_input/total_input>ratio:
+                    full_inputs+=1
+            if col[0]==1:
+                total_crates+=1
+                if col[1]==1:
+                    full_crates+=1
+            if col[0]==3:
+                total_outputs+=1
+                if col[1]==1:
+                    full_outputs+=1
+    
+    print ("inputs ratio  : ",full_inputs/total_inputs)
+    print ("crates ratio  : ",full_crates/total_crates)
+    print ("outputs ratio : ",full_outputs/total_outputs)
+    input_ratio,crate_ratio,output_ratio=[12/16,
+          4/10,
+          2/10]
+    #minimize input ratio, mazimize output_ratio
+    if full_inputs/total_inputs>input_ratio:
         return make_input_instruction(grid,start)
     else:
         return make_crates_instruction(grid,start)
