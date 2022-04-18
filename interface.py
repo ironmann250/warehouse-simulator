@@ -134,7 +134,7 @@ class Screen:
         for i in range(config.INPUT):
             for j in range (config.INPUT_CONTAINERS):
 
-                self.grid[gridx][gridy]=[2,1] #put type and list location
+                self.grid[gridx][gridy]=[2,0] #put type and list location
                 gridx+=1
             gridx+=1 # skip a cell
 
@@ -424,7 +424,7 @@ class Screen:
         self.draw_components()
         action=self.execute_instruction()
         if action:
-            self.path_exec(action,0.0001)
+            self.path_exec(action,0.02)
         pygame.display.update()
     
     def run(self):

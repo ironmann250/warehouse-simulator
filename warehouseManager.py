@@ -212,10 +212,11 @@ def simple_strategy(grid,start):
     print ("inputs ratio  : ",full_inputs/total_inputs)
     print ("crates ratio  : ",full_crates/total_crates)
     print ("outputs ratio : ",full_outputs/total_outputs)
-    input_ratio,crate_ratio,output_ratio=[12/16,
+    input_ratio,crate_ratio,output_ratio=[0/16,
           4/10,
           2/10]
-    #minimize input ratio, mazimize output_ratio
+    #minimize input ratio, mazimize output_ratio,
+    #check the rate of change of crate too or maybe all ratios
     if full_inputs/total_inputs>input_ratio:
         return make_input_instruction(grid,start)
     else:
