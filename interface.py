@@ -1,8 +1,7 @@
-from enum import auto
-import pygame,config,time,asyncio,collections,pprint
-from maze import Maze, MazeLocation, manhattan_distance,euclidean_distance
-from generic_search import dfs, bfs, node_to_path, astar, Node
-from typing import List, NamedTuple, Callable, Optional
+import pygame,config,time
+from maze import Maze, MazeLocation, manhattan_distance
+from generic_search import node_to_path, astar, Node
+from typing import List,Callable, Optional
 from warehouseManager import *
 #global vars
 from pygame.locals import (
