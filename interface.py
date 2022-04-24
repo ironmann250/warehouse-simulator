@@ -394,7 +394,9 @@ class Screen:
 
     def execute_instruction(self):
         if self.instruction_counter>=len(config.INSTRUCTIONS):
-            config.INSTRUCTIONS=simple_strategy(self.grid,self.get_crane_location())
+            #config.INSTRUCTIONS=simple_strategy(self.grid,self.get_crane_location())
+            #config.INSTRUCTIONS=minimax(Grid_stats(self.grid),1,True,self)[1].instructions
+            
             self.instruction_counter=0
             return None
         start,end,action=config.INSTRUCTIONS[self.instruction_counter]
@@ -405,8 +407,8 @@ class Screen:
         if start==self.crane[:2]:#self.grid[start[0]][start[1]][0]==4:
             if True:#self.location_near_crate(end):
                 self.path=self.plan_path(start,end)
+                #del config.INSTRUCTIONS[self.instruction_counter]
                 return action
-
         return None
 
 
@@ -421,9 +423,16 @@ class Screen:
         self.draw_grid()
         self.init_components()
         self.draw_components()
+        instructs=minimax(Grid_stats(self.grid),3,True,self)[1].instructions
+        if len(instructs)>0:
+            config.INSTRUCTIONS.append(instructs[0])
+            config.INSTRUCTIONS.append(instructs[1])
+            print (self.instruction_counter,len(config.INSTRUCTIONS),instructs)
+        else:
+            self.instruction_counter=0
         action=self.execute_instruction()
         if action:
-            self.path_exec(action,0.02)
+            self.path_exec(action,0.05)
         pygame.display.update()
     
     def run(self):
@@ -432,8 +441,10 @@ class Screen:
             event_list=pygame.event.get()
             
             self.draw_frame()
+            
+            
             #self.clock.tick()
-
+            
             keys=pygame.key.get_pressed()
 
             if keys[K_UP]:
