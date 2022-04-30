@@ -22,7 +22,7 @@ class Grid_stats():
         self.total_crates=0
         self.empty_crates=0
         self.instructions=instructions
-
+        grid=deepcopy(grid)
         for r,rows in enumerate(grid):
             for c,col in enumerate(rows):
                 if col[0]==2:
@@ -45,7 +45,7 @@ class Grid_stats():
                     else:
                         self.empty_outputs+=1
 
-    def calculate_score(self,scoring_technique=1):
+    def calculate_score(self,scoring_technique=2):
         """
         we evaluate the score based on the score equations
         output score = (total output - empty outputs) / total output
@@ -156,15 +156,15 @@ def make_input_instruction(grid,start):
     instructions.append([end1,end2,action2])
     return instructions
 
-def get_possible_moves(screen):
+def get_possible_moves(grid,crane):
     """
     moves => make_input_instruction(add to crates) 
     or make_crates_instruction(remove from crates)
     """
-    grid1=deepcopy(screen.grid)
-    grid2=deepcopy(screen.grid)
-    crane1=deepcopy(screen.grid)
-    crane2=deepcopy(screen.grid)
+    grid1=deepcopy(grid)
+    grid2=deepcopy(grid)
+    crane1=deepcopy(crane)
+    crane2=deepcopy(crane)
 
     store_instruction= make_input_instruction(grid1,crane1[:2])
     retrieve_instruction = make_crates_instruction(grid2,crane2[:2])
@@ -201,7 +201,9 @@ def simulate_warehouse(grid,crane,instructions):
     return [screen.grid,instructions]
     
 
-def minimax(move,depth,max_player,screen):
+def minimax(move,depth,max_player,grid,crane):
+    grid=deepcopy(grid)
+    crane=deepcopy(crane)
     if depth <= 0 or move.stop_condition():
         #print (depth)
         return move.calculate_score(),move
@@ -209,8 +211,8 @@ def minimax(move,depth,max_player,screen):
     if max_player:
         maxEval = float("-inf") #maybe 0
         best_move=None
-        for move in get_possible_moves(screen):
-            evaluation=minimax(move,depth-1,True,screen)[0]
+        for move in get_possible_moves(grid,crane):
+            evaluation=minimax(move,depth-1,True,grid,crane)[0]
             maxEval = max(maxEval,evaluation)
             if maxEval == evaluation:
                 best_move=move
@@ -219,8 +221,8 @@ def minimax(move,depth,max_player,screen):
     else:
         maxEval = float("inf") #maybe 3
         best_move=None
-        for move in get_possible_moves(screen):
-            evaluation=minimax(move,depth-1,False,screen)[0]
+        for move in get_possible_moves(grid,crane):
+            evaluation=minimax(move,depth-1,False,grid,crane)[0]
             minEval = min(minEval,evaluation)
             if minEval == evaluation:
                 best_move=move

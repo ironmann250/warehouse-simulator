@@ -12,13 +12,13 @@ from copy import deepcopy
 
 class Grid():
     def __init__(self,grid=[[[]]],crane=[0,0,0],instructions=[]):
-        self.grid=grid
-        self.crane=crane
+        self.grid=deepcopy(grid)
+        self.crane=deepcopy(crane)
         self.grid_size=[len(grid),len(grid[0])]
         self.instructions=instructions
         self.instruction_counter=0
-        print (self.instructions)
-        print ("#########################")
+        #print (self.instructions)
+        #print ("#########################")
 
     ### methods it should have ###
     #execute instructions
@@ -104,7 +104,7 @@ class Grid():
             self.crane[1]=curr_location[1]
 
     def plan_path(self,start,end):
-        print ("calculation path from ",start,"to",end,"...")
+        #print ("calculation path from ",start,"to",end,"...")
         c=time.time()
         start = MazeLocation(start[0],start[1])
         end = MazeLocation(end[0],end[1])
@@ -118,15 +118,15 @@ class Grid():
         mz.goal_test, mz.successors,distance)
 
         if solution is None:
-            print ("calculation invalid")
+            #print ("calculation invalid")
             return []
         else:
             path: List[MazeLocation] = node_to_path(solution)
-            print ("calculation finished in: ",time.time()-c ,"seconds")
+            #print ("calculation finished in: ",time.time()-c ,"seconds")
             return path
 
     def path_result(self,action,path):
-        if self.path==[]:
+        if path==[]:
             return self.grid
         last_cell=path[-1]
         self.crane[0]=last_cell.row

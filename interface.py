@@ -3,6 +3,7 @@ from maze import Maze, MazeLocation, manhattan_distance
 from generic_search import node_to_path, astar, Node
 from typing import List,Callable, Optional
 from warehouseManager import *
+from copy import deepcopy
 #global vars
 from pygame.locals import (
 
@@ -43,6 +44,7 @@ class Screen:
         #init screen class attributes
         self.running=True
         self.instruction_counter=0
+        config.INSTRUCTIONS=[]
         self.clock=pygame.time.Clock()
         self.grid_size=[0,0] #x,y number of cells in grid
         self.inputs=[]
@@ -392,12 +394,13 @@ class Screen:
                 if col[0]==4:
                     return r,c
 
-    def execute_instruction(self):
+    def execute_instruction_method(self):
         if self.instruction_counter>=len(config.INSTRUCTIONS):
             #config.INSTRUCTIONS=simple_strategy(self.grid,self.get_crane_location())
             #config.INSTRUCTIONS=minimax(Grid_stats(self.grid),1,True,self)[1].instructions
             
             self.instruction_counter=0
+            config.INSTRUCTIONS=[]
             return None
         start,end,action=config.INSTRUCTIONS[self.instruction_counter]
         if len(self.path)>0: #let path finish
@@ -407,9 +410,16 @@ class Screen:
         if start==self.crane[:2]:#self.grid[start[0]][start[1]][0]==4:
             if True:#self.location_near_crate(end):
                 self.path=self.plan_path(start,end)
-                #del config.INSTRUCTIONS[self.instruction_counter]
+               # del config.INSTRUCTIONS[0]
                 return action
         return None
+    
+    def execute_instruction(self, instruction):
+        #exec single instruction
+        start,end,action=instruction
+        if start==self.crane[:2]:
+            self.path=self.plan_path(start,end)
+            return action
 
 
     
@@ -423,16 +433,17 @@ class Screen:
         self.draw_grid()
         self.init_components()
         self.draw_components()
-        instructs=minimax(Grid_stats(self.grid),3,True,self)[1].instructions
-        if len(instructs)>0:
-            config.INSTRUCTIONS.append(instructs[0])
-            config.INSTRUCTIONS.append(instructs[1])
-            print (self.instruction_counter,len(config.INSTRUCTIONS),instructs)
-        else:
-            self.instruction_counter=0
-        action=self.execute_instruction()
-        if action:
-            self.path_exec(action,0.05)
+        instructs=minimax(Grid_stats(self.grid),10,True,self.grid,self.crane)[1].instructions
+        if instructs:
+            for instruction in instructs:
+                print(instructs)
+                action=self.execute_instruction(instruction)
+                #print (action)
+                if action:
+                    while self.path:
+                        self.path_exec(action,0.01)
+                        self.draw_components()
+                        pygame.display.update()
         pygame.display.update()
     
     def run(self):
