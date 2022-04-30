@@ -2,11 +2,13 @@ from maze import Maze, MazeLocation, manhattan_distance
 from generic_search import node_to_path, astar, Node
 from typing import List,Callable, Optional
 import time
+from copy import deepcopy
 #module to handle minimax simulation of the grid
 #a more optimized implementation of grid action
 #performed by the interface (screen) module
 #also not using any pygame functions because
 #they can't be pickled(deepcopy)
+#also no loops if possible :)
 
 class Grid():
     def __init__(self,grid=[[[]]],crane=[0,0,0],instructions=[]):
@@ -118,14 +120,30 @@ class Grid():
         else:
             path: List[MazeLocation] = node_to_path(solution)
             print ("calculation finished in: ",time.time()-c ,"seconds")
-            return path    
+            return path
+
+    def path_result(self,action,path):
+        if self.path==[]:
+            return self.grid
+        last_cell=path[-1]
+        self.crane[0]=last_cell.row
+        self.crane[1]=last_cell.column
+        self.move_crane(action)
+        return deepcopy(self.grid)
+        
 
     def execute_instruction(self,instruction):
         start,end,action=instruction
         if start==self.crane[:2]:
-            return action, self.plan_path(start, end)
+            return self.path_result(action, self.plan_path(start, end)) #a grid
             
 
+    def run(self,instructions):
+        grids=[]
+        #loop is ok cause it's small usually 2 loops
+        for instruction in instructions:
+            grids.append(self.execute_instruction(instruction))
+        return grids
 
 
 
