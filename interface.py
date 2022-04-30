@@ -416,7 +416,7 @@ class Screen:
     def run_once(self):
         if not self.testrun:
             return
-        self.testrun=False
+        self.testrun=False 
 
     def draw_frame(self):
         self.screen.fill((255,255,255))
