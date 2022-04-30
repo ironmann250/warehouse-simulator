@@ -17,6 +17,9 @@ class Grid():
         self.grid_size=[len(grid),len(grid[0])]
         self.instructions=instructions
         self.instruction_counter=0
+        print (self.instructions)
+        print ("#########################")
+
     ### methods it should have ###
     #execute instructions
     #-> read instructions
@@ -138,10 +141,11 @@ class Grid():
             return self.path_result(action, self.plan_path(start, end)) #a grid
             
 
-    def run(self,instructions):
+    def run(self):
         grids=[]
         #loop is ok cause it's small usually 2 loops
-        for instruction in instructions:
+        for instruction in self.instructions:
+            #print (instruction)
             grids.append(self.execute_instruction(instruction))
         return grids
 

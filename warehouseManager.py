@@ -7,7 +7,7 @@
 
 import config,random,pprint
 from copy import copy as deepcopy
-
+from grid_container import Grid
 order_count=0
 
 class Grid_stats():
@@ -161,14 +161,17 @@ def get_possible_moves(screen):
     moves => make_input_instruction(add to crates) 
     or make_crates_instruction(remove from crates)
     """
-    screen1=deepcopy(screen)
-    screen2=deepcopy(screen)
+    grid1=deepcopy(screen.grid)
+    grid2=deepcopy(screen.grid)
+    crane1=deepcopy(screen.grid)
+    crane2=deepcopy(screen.grid)
 
-    store_instruction= make_input_instruction(screen1.grid,screen1.crane[:2])
-    retrieve_instruction = make_crates_instruction(screen2.grid,screen2.crane[:2])
+    store_instruction= make_input_instruction(grid1,crane1[:2])
+    retrieve_instruction = make_crates_instruction(grid2,crane2[:2])
     
-    store_sim_result=simulate_warehouse(screen1,store_instruction)
-    retrieve_sim_result=simulate_warehouse(screen2,retrieve_instruction)
+    
+    store_sim_result=simulate_warehouse(grid1,crane1,store_instruction)
+    retrieve_sim_result=simulate_warehouse(grid2,crane2,retrieve_instruction)
 
 
     store_result_stats=Grid_stats(store_sim_result[0],store_sim_result[1])
@@ -178,13 +181,16 @@ def get_possible_moves(screen):
 
 
 
-def simulate_warehouse(screen,instructions):
+def simulate_warehouse(grid,crane,instructions):
     """
     move crane according to instructions and get new grid and crane
     """
-    crane=screen.crane
-    grid=screen.grid
-    screen.instruction_counter=0
+    #using the optimized grid for minimax
+    newGrid=Grid(grid,crane,instructions)
+    if instructions:
+        return [newGrid.run()[-1],instructions]
+    else:
+        return [grid,instructions]
     config.INSTRUCTIONS=instructions
     action=screen.execute_instruction()
     while action:
