@@ -433,7 +433,7 @@ class Screen:
         self.draw_grid()
         self.init_components()
         self.draw_components()
-        instructs=minimax(Grid_stats(self.grid),10,True,self.grid,self.crane)[1].instructions
+        instructs=minimax(Grid_stats(self.grid),3,False,self.grid,self.crane)[1].instructions
         if instructs:
             for instruction in instructs:
                 print(instructs)
@@ -441,7 +441,10 @@ class Screen:
                 #print (action)
                 if action:
                     while self.path:
+
                         self.path_exec(action,0.01)
+                        self.screen.fill((255,255,255))
+                        self.draw_grid()
                         self.draw_components()
                         pygame.display.update()
         pygame.display.update()

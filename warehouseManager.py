@@ -45,7 +45,7 @@ class Grid_stats():
                     else:
                         self.empty_outputs+=1
 
-    def calculate_score(self,scoring_technique=2):
+    def calculate_score(self,scoring_technique=1):
         """
         we evaluate the score based on the score equations
         output score = (total output - empty outputs) / total output
@@ -71,7 +71,7 @@ class Grid_stats():
         this balances the crates it is between 0 to 3
         """
         input_score = (self.total_inputs - self.empty_inputs)/self.total_inputs
-        output_score = (self.total_outputs - self.empty_outputs)/self.total_outputs
+        output_score = (self.total_outputs - self.full_outputs)/self.total_outputs
         crate_ratio = (self.total_crates - self.full_crates)/self.total_crates #0 if full 1 if empty
         score=0
         if scoring_technique == 1:
@@ -83,7 +83,8 @@ class Grid_stats():
             crate_score=1-(mapped_crate_ratio**2)
             score = output_score + crate_score + input_score
         else:
-            score = output_score + crate_score + input_score
+            score = output_score + crate_ratio  +  input_score
+            #print(score)
         
         return score
     
@@ -175,7 +176,7 @@ def get_possible_moves(grid,crane):
 
 
     store_result_stats=Grid_stats(store_sim_result[0],store_sim_result[1])
-    retrieve_result_stats=Grid_stats(retrieve_sim_result[0],store_sim_result[1])
+    retrieve_result_stats=Grid_stats(retrieve_sim_result[0],retrieve_sim_result[1])
 
     return [store_result_stats,retrieve_result_stats]
 
@@ -200,6 +201,16 @@ def simulate_warehouse(grid,crane,instructions):
     #config.INSTRUCTIONS=[]
     return [screen.grid,instructions]
     
+toggle=0
+def dumbminimax(move,depth,max_player,grid,crane):
+    global toggle
+    move=get_possible_moves(grid,crane)[1]
+    # if toggle==0:
+    #     toggle=1
+    # else:
+    #     toggle=0
+    # print(toggle)
+    return [],move
 
 def minimax(move,depth,max_player,grid,crane):
     grid=deepcopy(grid)
@@ -212,17 +223,17 @@ def minimax(move,depth,max_player,grid,crane):
         maxEval = float("-inf") #maybe 0
         best_move=None
         for move in get_possible_moves(grid,crane):
-            evaluation=minimax(move,depth-1,True,grid,crane)[0]
+            evaluation=minimax(move,depth-1,False,grid,crane)[0]
             maxEval = max(maxEval,evaluation)
             if maxEval == evaluation:
                 best_move=move
-        #print (depth)
+            print (move.calculate_score())
         return maxEval,best_move
     else:
-        maxEval = float("inf") #maybe 3
+        minEval = float("inf") #maybe 3
         best_move=None
         for move in get_possible_moves(grid,crane):
-            evaluation=minimax(move,depth-1,False,grid,crane)[0]
+            evaluation=minimax(move,depth-1,True,grid,crane)[0]
             minEval = min(minEval,evaluation)
             if minEval == evaluation:
                 best_move=move

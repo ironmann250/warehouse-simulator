@@ -78,7 +78,7 @@ def randomly_populate_crates():
         for length in range(CRATES_LENGTH):
             for width in range(CRATES_WIDTH):
                 #choose randomly with bias of n% for a crate to not be empty
-                CRATES[group][length][width]=random.choices([1,0], weights=(70,30),k=1)[0] 
+                CRATES[group][length][width]=random.choices([1,0], weights=(80,20),k=1)[0] 
 
 
 randomly_populate_crates()
