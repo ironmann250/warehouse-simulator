@@ -311,6 +311,7 @@ class Screen:
 
             #self.grid[r1][c1][1]=state2
             self.grid[r1][c1][1]=state2
+        self.draw_components()
         
             
 
@@ -321,6 +322,7 @@ class Screen:
             for col in row:
                 if col[0]==2 and col[1]==0:
                     col[1]=1
+                    self.draw_components()
                     return
              
     
@@ -433,7 +435,7 @@ class Screen:
         self.draw_grid()
         self.init_components()
         self.draw_components()
-        instructs=minimax(Grid_stats(self.grid),3,False,self.grid,self.crane)[1].instructions
+        instructs=minimax(Grid_stats(self.grid),3,True,self.grid,self.crane)[1].instructions
         if instructs:
             for instruction in instructs:
                 print(instructs)

@@ -45,7 +45,7 @@ class Grid_stats():
                     else:
                         self.empty_outputs+=1
 
-    def calculate_score(self,scoring_technique=1):
+    def calculate_score(self,scoring_technique=4):
         """
         we evaluate the score based on the score equations
         output score = (total output - empty outputs) / total output
@@ -82,10 +82,17 @@ class Grid_stats():
             mapped_crate_ratio=(crate_ratio*2)-1 #map it between -1 and 1
             crate_score=1-(mapped_crate_ratio**2)
             score = output_score + crate_score + input_score
-        else:
-            score = output_score + crate_ratio  +  input_score
+        elif scoring_technique == 3:
+            if output_score>0.5:
+                output_score=0
+            score = output_score + crate_ratio  +  (self.full_inputs*input_score)
             #print(score)
-        
+        else:
+            score=0
+            if self.total_outputs-self.full_outputs<17:
+                score-=1
+            if self.full_inputs != 0:
+                score+=30
         return score
     
     def stop_condition(self):
