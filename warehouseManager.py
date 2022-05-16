@@ -89,10 +89,13 @@ class Grid_stats():
             #print(score)
         else:
             score=0
-            if self.total_outputs-self.full_outputs<17:
+            if self.total_outputs-self.empty_outputs>=4:
                 score-=1
-            if self.full_inputs != 0:
-                score+=30
+            else:
+                score+=1
+            if self.full_inputs !=0:
+                if self.full_inputs in list(range(0,self.total_inputs+1)):
+                    score+=1
         return score
     
     def stop_condition(self):
@@ -183,8 +186,9 @@ def get_possible_moves(grid,crane):
 
 
     store_result_stats=Grid_stats(store_sim_result[0],store_sim_result[1])
+    print ("store",store_result_stats.calculate_score())
     retrieve_result_stats=Grid_stats(retrieve_sim_result[0],retrieve_sim_result[1])
-
+    print ("retrieve",retrieve_result_stats.calculate_score())
     return [store_result_stats,retrieve_result_stats]
 
 
@@ -218,6 +222,31 @@ def dumbminimax(move,depth,max_player,grid,crane):
     #     toggle=0
     # print(toggle)
     return [],move
+
+def make_decision(grid,crane):
+    grid=deepcopy(grid)
+    crane=deepcopy(crane)
+    moves = get_possible_moves(grid,crane)
+    if moves[0].calculate_score()>moves[1].calculate_score():
+        return moves[0]
+    else:
+        return moves[1]
+
+def decision_loop(grid,crane,depth):
+    grid=deepcopy(grid)
+    crane=deepcopy(crane)
+    highest_score=float("-inf")
+    best_move=Grid_stats(grid)
+    for i in range(depth):
+        for move in get_possible_moves(grid,crane):
+            if move.calculate_score()>highest_score:
+                best_move=move
+                highest_score=best_move.calculate_score()
+                #print(best_move.calculate_score())
+    print("#######")
+    print(best_move.calculate_score())
+    return best_move
+
 
 def minimax(move,depth,max_player,grid,crane):
     grid=deepcopy(grid)

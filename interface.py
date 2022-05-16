@@ -14,6 +14,11 @@ from pygame.locals import (
     K_ESCAPE,
     KEYDOWN,
     QUIT,
+    K_s,
+    K_a,
+    K_r,
+    K_SPACE,
+
 )
 
 pygame.init()
@@ -24,6 +29,10 @@ pygame.time.set_timer(ADDTOINPUT,config.INPUT_SPEED)
 time.sleep(0.05)
 REMOVEFROMOUTPUT = pygame.USEREVENT + 2
 pygame.time.set_timer(REMOVEFROMOUTPUT, config.OUTPUT_SPEED)
+NORMAL_FLAG=0
+AUTOMATIC_FLAG=1
+RETRIEVE_FLAG=2
+STORE_FLAG=3
 
 
 class Container(pygame.sprite.Sprite):
@@ -57,6 +66,7 @@ class Screen:
         self.testrun=True
         self.path=[]
         self.path_counter=0
+        self.current_flag=NORMAL_FLAG
 
     def draw_rect(self,color,x,y,width,height):
         pygame.draw.rect(self.screen,color,
@@ -336,7 +346,7 @@ class Screen:
                 self.add_to_input()
     
     def plan_path(self,start,end):
-        print ("calculation path from ",start,"to",end,"...")
+        #print ("calculation path from ",start,"to",end,"...")
         c=time.time()
         start = MazeLocation(start[0],start[1])
         end = MazeLocation(end[0],end[1])
@@ -350,11 +360,11 @@ class Screen:
         mz.goal_test, mz.successors,distance)
 
         if solution is None:
-            print ("calculation invalid")
+            #print ("calculation invalid")
             return []
         else:
             path: List[MazeLocation] = node_to_path(solution)
-            print ("calculation finished in: ",time.time()-c ,"seconds")
+            #print ("calculation finished in: ",time.time()-c ,"seconds")
             return path
     
     def path_exec(self,action,sleep_for=0.05):
@@ -435,20 +445,31 @@ class Screen:
         self.draw_grid()
         self.init_components()
         self.draw_components()
-        instructs=minimax(Grid_stats(self.grid),3,True,self.grid,self.crane)[1].instructions
+        #instructs=minimax(Grid_stats(self.grid),3,True,self.grid,self.crane)[1].instructions
+        #instructs=decision_loop(self.grid,self.crane,1).instructions
+        if self.current_flag==AUTOMATIC_FLAG:
+            instructs=make_decision(self.grid,self.crane).instructions
+        elif self.current_flag==RETRIEVE_FLAG:
+            instructs=get_possible_moves(self.grid,self.crane)[1].instructions
+            self.current_flag=NORMAL_FLAG
+        elif self.current_flag==STORE_FLAG:
+            instructs=get_possible_moves(self.grid,self.crane)[0].instructions
+            self.current_flag=NORMAL_FLAG
+        else:
+            instructs=[]
         if instructs:
             for instruction in instructs:
-                print(instructs)
+                #print(instructs)
                 action=self.execute_instruction(instruction)
                 #print (action)
                 if action:
                     while self.path:
-
                         self.path_exec(action,0.01)
                         self.screen.fill((255,255,255))
                         self.draw_grid()
                         self.draw_components()
                         pygame.display.update()
+    
         pygame.display.update()
     
     def run(self):
@@ -474,6 +495,18 @@ class Screen:
                 time.sleep(0.1)
             if keys[K_RIGHT]:
                 self.move_crane('right')
+                time.sleep(0.1)
+            if keys[K_a]:
+                self.current_flag=AUTOMATIC_FLAG
+                time.sleep(0.1)
+            if keys[K_s]:
+                self.current_flag=STORE_FLAG
+                time.sleep(0.1)
+            if keys[K_r]:
+                self.current_flag=RETRIEVE_FLAG
+                time.sleep(0.1)
+            if keys[K_SPACE]:
+                self.current_flag=NORMAL_FLAG
                 time.sleep(0.1)
 
             self.handle_events(event_list)
