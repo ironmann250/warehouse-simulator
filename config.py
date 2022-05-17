@@ -1,4 +1,4 @@
-import random,pprint
+import random
 
 SCREEN_WIDTH=860
 SCREEN_HEIGHT=650
@@ -12,19 +12,19 @@ CRANE_SPEED=5
 CRANE_COLOR=(255,116,64) ##ff7440, redorange
 
 INPUT=2
-INPUT_CONTAINERS=8
-INPUT_SPEED=5000 #milliseconds
+INPUT_CONTAINERS=12
+INPUT_SPEED=2000 #milliseconds
 INPUTS_COLOR=(0,255,0)
 
 
 OUTPUTS=2
-OUTPUT_CONTAINERS=8
+OUTPUT_CONTAINERS=12
 OUTPUT_SPEED=500 #milliseconds
 OUTPUTS_COLOR=(255,0,0)
 
-CRATES_WIDTH=2
+CRATES_WIDTH=2#between 1-2 since the crane can't move through a crate
 CRATES_LENGTH=20
-CRATES_GROUPS=5
+CRATES_GROUPS=10
 CRATES=[[[0]*CRATES_WIDTH]*CRATES_LENGTH
  for i in range(CRATES_GROUPS)] #init crates GROUP[LENGTH[WIDTH]]
 CRATES_COLOR=(0,0,255)
@@ -33,44 +33,6 @@ EMPTY_COLOR=(190,190,190)
 
 TYPES=[0,1,2,3] #0 nothing, 1 crate, 2 input, 3 output, 4 is robot
 INSTRUCTIONS=[]
-'''[[[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up'],
-             [[0,0],[17,25],'up'],  #[[FROM], [TO]] ID is what grid to what grid
-             [[17,25],[16,25],'up'],
-             [[16,25],[0,0],'up']
-             ]'''
-
 MIN_MAX_ORDERS=[1,5]
 
 def randomly_populate_crates():
@@ -78,7 +40,7 @@ def randomly_populate_crates():
         for length in range(CRATES_LENGTH):
             for width in range(CRATES_WIDTH):
                 #choose randomly with bias of n% for a crate to not be empty
-                CRATES[group][length][width]=random.choices([1,0], weights=(80,20),k=1)[0] 
+                CRATES[group][length][width]=random.choices([1,0], weights=(50,50),k=1)[0] 
 
 
 randomly_populate_crates()

@@ -118,11 +118,11 @@ class Grid():
         mz.goal_test, mz.successors,distance)
 
         if solution is None:
-            #print ("calculation invalid")
+            print ("calculation invalid")
             return []
         else:
             path: List[MazeLocation] = node_to_path(solution)
-            #print ("calculation finished in: ",time.time()-c ,"seconds")
+            print ("calculation finished in: ",time.time()-c ,"seconds")
             return path
 
     def path_result(self,action,path):

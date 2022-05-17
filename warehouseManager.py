@@ -45,7 +45,7 @@ class Grid_stats():
                     else:
                         self.empty_outputs+=1
 
-    def calculate_score(self,scoring_technique=4):
+    def calculate_score(self,scoring_technique=1):
         """
         we evaluate the score based on the score equations
         output score = (total output - empty outputs) / total output
@@ -186,9 +186,9 @@ def get_possible_moves(grid,crane):
 
 
     store_result_stats=Grid_stats(store_sim_result[0],store_sim_result[1])
-    print ("store",store_result_stats.calculate_score())
+    print ("store score:",store_result_stats.calculate_score())
     retrieve_result_stats=Grid_stats(retrieve_sim_result[0],retrieve_sim_result[1])
-    print ("retrieve",retrieve_result_stats.calculate_score())
+    print ("retrieve score:",retrieve_result_stats.calculate_score())
     return [store_result_stats,retrieve_result_stats]
 
 
@@ -276,7 +276,43 @@ def minimax(move,depth,max_player,grid,crane):
         #print (depth)
         return minEval,best_move
 
+def randomized_time_dependent_action(grid,crane):
+    grid=deepcopy(grid)
+    crane=deepcopy(crane)
+    grid_param=Grid_stats(grid)
+    if grid_param.full_inputs == 0 and grid_param.full_outputs == 0:
+        output_ratio=0
+        input_ratio=1
+    elif grid_param.full_inputs == 0 and grid_param.full_outputs != 0:
+        output_ratio=0
+        input_ratio=1
+    elif (grid_param.full_crates/grid_param.total_crates>=random.uniform(0.9, 1)):
+        output_ratio=0
+        input_ratio=1
+    elif (grid_param.empty_inputs/grid_param.total_inputs<=random.uniform(0, 0.2))or(grid_param.full_outputs/grid_param.total_outputs>=random.uniform(0.9, 1)):
+        output_ratio=1
+        input_ratio=0
     
+    else :#grid_param.full_inputs != 0 and grid_param.full_outputs == 0:
+        try:
+            output_ratio=grid_param.full_outputs/grid_param.full_inputs#config.INPUT_SPEED/config.OUTPUT_SPEED
+            input_ratio=grid_param.full_inputs/grid_param.full_outputs#config.OUTPUT_SPEED/config.INPUT_SPEED
+        except:
+            output_ratio=0.5
+            input_ratio=0.5
+    
+
+    total=output_ratio+input_ratio
+    
+    if total!=0:
+        output_perc=(output_ratio/total)*100
+        input_perc=(input_ratio/total)*100
+    else:
+        input_perc=100
+        output_perc=0
+    choice=random.choices([1,0], weights=(input_perc,output_perc),k=1)[0] 
+    #print (choice)
+    return get_possible_moves(grid,crane)[choice]
 
 
 def get_orders():

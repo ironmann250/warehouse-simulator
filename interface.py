@@ -448,7 +448,7 @@ class Screen:
         #instructs=minimax(Grid_stats(self.grid),3,True,self.grid,self.crane)[1].instructions
         #instructs=decision_loop(self.grid,self.crane,1).instructions
         if self.current_flag==AUTOMATIC_FLAG:
-            instructs=make_decision(self.grid,self.crane).instructions
+            instructs=randomized_time_dependent_action(self.grid,self.crane).instructions
         elif self.current_flag==RETRIEVE_FLAG:
             instructs=get_possible_moves(self.grid,self.crane)[1].instructions
             self.current_flag=NORMAL_FLAG
